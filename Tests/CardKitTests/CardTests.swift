@@ -9,7 +9,6 @@ import XCTest
 @testable import CardKit
 
 final class CardTests: XCTestCase {
-    
     func test_card_equality_sameSuit_sameValue() {
         let c1 = Card(suit: .spade, value: .ace)
         let c2 = Card(suit: .spade, value: .ace)

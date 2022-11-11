@@ -13,7 +13,7 @@ public struct Card: Equatable {
     public let suit: CardSuit
     public let value: CardValue
     
-    /// Initialze an instance of `Card`.
+    /// Initialize an instance of `Card`.
     ///
     /// - parameter suit: The `CardSuit` of the card.
     /// - parameter value: The `CardValue` of the card.

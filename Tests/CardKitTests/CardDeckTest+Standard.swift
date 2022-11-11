@@ -10,7 +10,6 @@ import Foundation
 import XCTest
 
 final class CardDeckTest_Standard: CardDeckTest {
-    
     override func setUpWithError() throws {
         try super.setUpWithError()
         cardDeck = CardDeck.standard()
@@ -45,6 +44,15 @@ final class CardDeckTest_Standard: CardDeckTest {
         XCTAssertNil(card)
     }
     
+    func test_drawCard_afterDrawingAllCards_andRefilling() {
+        draw(nTimes: cardDeck.numberOfCards, from: cardDeck)
+        XCTAssertNil(cardDeck.drawCard())
+        cardDeck.delegate = mockDelegate
+        cardDeck.refill()
+        XCTAssertNotNil(cardDeck.drawCard())
+        XCTAssertTrue(mockDelegate.cardDeckDidRefillWasCalled)
+    }
+    
     func test_unshuffledOrder() {
         expectedUnshuffledCards(numberOfDecks: 1).forEach { expectedCard in
             let nextCard = cardDeck.drawCard()
@@ -56,15 +64,10 @@ final class CardDeckTest_Standard: CardDeckTest {
 // MARK: - Private
 
 extension CardDeckTest_Standard {
-    
     private func expectedUnshuffledCards(numberOfDecks: Int) -> [Card] {
         var cards = [Card]()
         (0..<numberOfDecks).forEach { _ in
-            CardSuit.allCases.forEach { suit in
-                CardValue.unshuffledOrder(for: suit).forEach { value in
-                    cards.append(Card(suit: suit, value: value))
-                }
-            }
+            cards.append(contentsOf: CardDeck.ordered)
         }
         return cards
     }

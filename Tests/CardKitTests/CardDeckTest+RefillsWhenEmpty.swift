@@ -10,11 +10,10 @@ import Foundation
 import XCTest
 
 final class CardDeckTest_RefillsWhenEmpty: CardDeckTest {
-    
     override func setUpWithError() throws {
         try super.setUpWithError()
         let config = CardDeck.Configuration(numberOfDecks: 1,
-                                            preshuffled: true,
+                                            shuffled: true,
                                             refillsWhenEmpty: true,
                                             excludedCardValues: [],
                                             excludedCardSuits: [])
@@ -33,6 +32,9 @@ final class CardDeckTest_RefillsWhenEmpty: CardDeckTest {
     func test_numberOfCards_afterDrawingAllCards() {
         draw(nTimes: cardDeck.numberOfCards, from: cardDeck)
         XCTAssertEqual(cardDeck.numberOfCards, 0)
+        cardDeck.delegate = mockDelegate
+        XCTAssertNotNil(cardDeck.drawCard())
+        XCTAssertTrue(mockDelegate.cardDeckDidRefillWasCalled)
     }
     
     func test_numberOfCards_afterShuffle() {

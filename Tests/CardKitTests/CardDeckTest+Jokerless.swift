@@ -10,14 +10,13 @@ import Foundation
 import XCTest
 
 final class CardDeckTest_Jokerless: CardDeckTest {
-    
     override func setUpWithError() throws {
         try super.setUpWithError()
         let config = CardDeck.Configuration(numberOfDecks: 1,
-                                            preshuffled: true,
+                                            shuffled: true,
                                             refillsWhenEmpty: false,
                                             excludedCardValues: [.joker],
-                                            excludedCardSuits: [.joker])
+                                            excludedCardSuits: [.none])
         cardDeck = CardDeck(configuration: config)
     }
     
@@ -50,11 +49,20 @@ final class CardDeckTest_Jokerless: CardDeckTest {
         XCTAssertNil(card)
     }
     
+    func test_drawCard_afterDrawingAllCards_andRefilling() {
+        draw(nTimes: cardDeck.numberOfCards, from: cardDeck)
+        XCTAssertNil(cardDeck.drawCard())
+        cardDeck.delegate = mockDelegate
+        cardDeck.refill()
+        XCTAssertNotNil(cardDeck.drawCard())
+        XCTAssertTrue(mockDelegate.cardDeckDidRefillWasCalled)
+    }
+    
     func test_noJokersArePresent() {
         (0..<cardDeck.numberOfCards).forEach { _ in
             let card = cardDeck.drawCard()
             XCTAssertNotEqual(card?.value, .joker)
-            XCTAssertNotEqual(card?.suit, .joker)
+            XCTAssertNotEqual(card?.suit, CardSuit.none)
         }
     }
 }

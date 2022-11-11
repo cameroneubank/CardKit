@@ -10,14 +10,13 @@ import Foundation
 import XCTest
 
 final class CardDeckTest_SpadesOnly: CardDeckTest {
-    
     override func setUpWithError() throws {
         try super.setUpWithError()
         let config = CardDeck.Configuration(numberOfDecks: 1,
-                                            preshuffled: false,
+                                            shuffled: false,
                                             refillsWhenEmpty: false,
                                             excludedCardValues: [],
-                                            excludedCardSuits: [.club, .diamond, .heart, .joker])
+                                            excludedCardSuits: [.club, .diamond, .heart, .none])
         cardDeck = CardDeck(configuration: config)
     }
     
@@ -50,8 +49,17 @@ final class CardDeckTest_SpadesOnly: CardDeckTest {
         XCTAssertNil(card)
     }
     
+    func test_drawCard_afterDrawingAllCards_andRefilling() {
+        draw(nTimes: cardDeck.numberOfCards, from: cardDeck)
+        XCTAssertNil(cardDeck.drawCard())
+        cardDeck.delegate = mockDelegate
+        cardDeck.refill()
+        XCTAssertNotNil(cardDeck.drawCard())
+        XCTAssertTrue(mockDelegate.cardDeckDidRefillWasCalled)
+    }
+    
     func test_unshuffledOrder() {
-        let expected: [Card] = CardValue.unshuffledOrder(for: .spade).map { Card(suit: .spade, value: $0) }
+        let expected: [Card] = CardDeck.orderedCardValues(for: .spade).map { Card(suit: .spade, value: $0) }
         (0..<cardDeck.numberOfCards).forEach { i in
             let card = cardDeck.drawCard()
             XCTAssertEqual(card, expected[i])
@@ -62,7 +70,7 @@ final class CardDeckTest_SpadesOnly: CardDeckTest {
         (0..<cardDeck.numberOfCards).forEach { _ in
             let card = cardDeck.drawCard()
             XCTAssertEqual(card?.suit, .spade)
-            XCTAssertNotEqual(card?.suit, .joker)
+            XCTAssertNotEqual(card?.suit, CardSuit.none)
             XCTAssertNotEqual(card?.suit, .diamond)
             XCTAssertNotEqual(card?.suit, .club)
             XCTAssertNotEqual(card?.suit, .heart)

@@ -8,9 +8,9 @@
 import Foundation
 
 /// Represents the suit of a card.
-public enum CardSuit: CaseIterable {
+public enum CardSuit {
     /// The special suit for jokers.
-    case joker
+    case none
     case spade
     case diamond
     case club
